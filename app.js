@@ -37,7 +37,7 @@ const loginWithGoogle = async () => {
     }
 
     // Zapisz dane użytkownika w Firestore w kolekcji "leaderboard"
-    await setDoc(doc(db, "users", user.uid), {
+    await setDoc(doc(db, "leaderboard", user.uid), {
       name: nick,
       email: user.email,
       photoURL: user.photoURL,
