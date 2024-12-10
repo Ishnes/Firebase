@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { getFirestore, collection, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,20 +19,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Przykład: Zapis danych do kolekcji "users"
-const saveUser = async () => {
-  try {
-    const docRef = await addDoc(collection(db, "users"), {
-      name: "Jan Kowalski",
-      email: "jan@example.com"
-    });
-    console.log("Dokument zapisany z ID: ", docRef.id);
-  } catch (error) {
-    console.error("Błąd dodawania dokumentu: ", error);
-  }
-};
-saveUser();
-
 // Tworzenie dostawcy Google
 const provider = new GoogleAuthProvider();
 
@@ -43,15 +29,24 @@ const loginWithGoogle = async () => {
     const user = result.user; // Dane zalogowanego użytkownika
     console.log("Zalogowany użytkownik:", user);
 
-    // Zapisz dane użytkownika w Firestore
+    // Poproś użytkownika o nick
+    const nick = prompt("Podaj swój nick:");
+    if (!nick) {
+      alert("Nick jest wymagany do zapisania się na tablicę wyników!");
+      return;
+    }
+
+    // Zapisz dane użytkownika w Firestore w kolekcji "leaderboard"
     await setDoc(doc(db, "users", user.uid), {
-      name: user.displayName,
+      name: nick,
       email: user.email,
       photoURL: user.photoURL,
+      score: 0, // Początkowy wynik
       lastLogin: new Date(),
     });
 
-    alert("Zalogowano pomyślnie!");
+    alert(`Witaj ${nick}, zostałeś zapisany na tablicę wyników!`);
+    displayMessage(`Zalogowano jako: ${nick}`);
   } catch (error) {
     console.error("Błąd podczas logowania:", error);
     alert("Błąd logowania: " + error.message);
@@ -63,20 +58,52 @@ const logout = async () => {
   try {
     await signOut(auth);
     alert("Wylogowano pomyślnie!");
+    displayMessage("Użytkownik wylogowany.");
   } catch (error) {
     console.error("Błąd podczas wylogowania:", error);
+    alert("Błąd wylogowania: " + error.message);
   }
 };
 
+// Funkcja wyświetlania wiadomości
 const displayMessage = (message) => {
-    const messagesDiv = document.getElementById("messages");
-    messagesDiv.textContent = message;
+  const messagesDiv = document.getElementById("messages");
+  messagesDiv.textContent = message;
 };
-
-// Przykład użycia:
-displayMessage("Logowanie zakończone sukcesem!");
-
-
 
 // Podłączenie funkcji do przycisków
 document.getElementById("google-login").addEventListener("click", loginWithGoogle);
+document.getElementById("logout").addEventListener("click", logout);
+
+import { getDocs, collection } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+const populateLeaderboard = async () => {
+    try {
+        const leaderboardTable = document.querySelector("#leaderboard tbody");
+        leaderboardTable.innerHTML = ""; // Wyczyść tabelę przed ponownym załadowaniem
+
+        const querySnapshot = await getDocs(collection(db, "leaderboard")); // Zamień "leaderboard" na nazwę swojej kolekcji
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+
+            // Utwórz nowy wiersz tabeli
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${data.nick || "Anonim"}</td>
+                <td>${data.score || 0}</td>
+            `;
+            leaderboardTable.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Błąd podczas pobierania danych z Firestore:", error);
+    }
+};
+
+// Wywołaj funkcję po zalogowaniu
+document.getElementById("google-login").addEventListener("click", async () => {
+    await loginWithGoogle();
+    populateLeaderboard(); // Uzupełnij tabelę po zalogowaniu
+});
+
+// Wywołaj funkcję przy każdym ładowaniu strony
+populateLeaderboard();
