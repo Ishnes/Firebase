@@ -13,7 +13,7 @@
             apiKey: "AIzaSyCKlFlmR1C5y-n1Q8MFY06glJlnwP6oSo4",
             authDomain: "test-ba24c.firebaseapp.com",
             projectId: "test-ba24c",
-            storageBucket: "test-ba24c.firebasestorage.app",
+            storageBucket: "test-ba24c.appspot.com",
             messagingSenderId: "385819042329",
             appId: "1:385819042329:web:337cac20ed1faa6c810088",
             measurementId: "G-BTRJPB6L9T"
@@ -22,6 +22,9 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+
+
 
 // Dodaj dane do Firestore
 db.collection('users').add({
@@ -81,7 +84,7 @@ const logout = async () => {
     }
 };
 
-document.getElementById("logout-button").addEventListener("click", logout);
+
 
 document.getElementById("google-login").addEventListener("click", loginWithGoogle);
 
