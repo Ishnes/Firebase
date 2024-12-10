@@ -63,5 +63,16 @@ const loginWithGoogle = async () => {
     }
 };
 
+const logout = async () => {
+    try {
+        await signOut(auth);
+        alert("Wylogowano pomyślnie!");
+    } catch (error) {
+        console.error("Błąd podczas wylogowania:", error);
+    }
+};
+
+document.getElementById("logout-button").addEventListener("click", logout);
+
 document.getElementById("google-login").addEventListener("click", loginWithGoogle);
 
