@@ -2,6 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 import { getFirestore, collection, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { getDocs} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -37,7 +38,7 @@ const loginWithGoogle = async () => {
     }
 
     // Zapisz dane użytkownika w Firestore w kolekcji "leaderboard"
-    await setDoc(doc(db, "leaderboard", user.uid), {
+    await setDoc(doc(db, "user", user.uid), {
       name: nick,
       email: user.email,
       photoURL: user.photoURL,
@@ -75,14 +76,14 @@ const displayMessage = (message) => {
 document.getElementById("google-login").addEventListener("click", loginWithGoogle);
 document.getElementById("logout").addEventListener("click", logout);
 
-import { getDocs, collection } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
 
 const populateLeaderboard = async () => {
     try {
-        const leaderboardTable = document.querySelector("#leaderboard tbody");
+        const leaderboardTable = document.querySelector("#user tbody");
         leaderboardTable.innerHTML = ""; // Wyczyść tabelę przed ponownym załadowaniem
 
-        const querySnapshot = await getDocs(collection(db, "leaderboard")); // Zamień "leaderboard" na nazwę swojej kolekcji
+        const querySnapshot = await getDocs(collection(db, "user")); // Zamień "leaderboard" na nazwę swojej kolekcji
         querySnapshot.forEach((doc) => {
             const data = doc.data();
 
