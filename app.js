@@ -37,7 +37,7 @@ const loginWithGoogle = async () => {
       return;
     }
 
-    // Zapisz dane użytkownika w Firestore w kolekcji "leaderboard"
+    // Zapisz dane użytkownika w Firestore w kolekcji "user"
     await setDoc(doc(db, "user", user.uid), {
       name: nick,
       email: user.email,
@@ -83,14 +83,17 @@ const populateLeaderboard = async () => {
         const leaderboardTable = document.querySelector("#user tbody");
         leaderboardTable.innerHTML = ""; // Wyczyść tabelę przed ponownym załadowaniem
 
-        const querySnapshot = await getDocs(collection(db, "user")); // Zamień "leaderboard" na nazwę swojej kolekcji
+        const querySnapshot = await getDocs(collection(db, "users"));
+        console.log("Pobrane dokumenty:", querySnapshot.size);
+
         querySnapshot.forEach((doc) => {
             const data = doc.data();
+            console.log("Dane użytkownika:", data);
 
             // Utwórz nowy wiersz tabeli
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${data.nick || "Anonim"}</td>
+                <td>${data.name || "Anonim"}</td>
                 <td>${data.score || 0}</td>
             `;
             leaderboardTable.appendChild(row);
@@ -99,6 +102,7 @@ const populateLeaderboard = async () => {
         console.error("Błąd podczas pobierania danych z Firestore:", error);
     }
 };
+
 
 // Wywołaj funkcję po zalogowaniu
 document.getElementById("google-login").addEventListener("click", async () => {
