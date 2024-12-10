@@ -10,25 +10,27 @@
             text-align: center;
             margin: 20px;
         }
-    
+
         button {
             margin: 10px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
         }
+
+        #messages {
+            margin-top: 20px;
+            font-weight: bold;
+        }
     </style>
-    
 </head>
 <body>
     <h1>Witaj na stronie Firebase!</h1>
     <button id="saveDataBtn">Zapisz dane do Firestore</button>
-
     <button id="google-login">Zaloguj się przez Google</button>
+
+    <!-- Element do wyświetlania wiadomości -->
     <div id="messages"></div>
-
-
-
 
     <script type="module" src="app.js"></script>
 </body>
