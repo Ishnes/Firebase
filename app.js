@@ -68,5 +68,15 @@ const logout = async () => {
   }
 };
 
+const displayMessage = (message) => {
+    const messagesDiv = document.getElementById("messages");
+    messagesDiv.textContent = message;
+};
+
+// Przykład użycia:
+displayMessage("Logowanie zakończone sukcesem!");
+
+
+
 // Podłączenie funkcji do przycisków
 document.getElementById("google-login").addEventListener("click", loginWithGoogle);
